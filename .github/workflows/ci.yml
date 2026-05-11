@@ -4,10 +4,11 @@ on:
   pull_request:
     branches:
       - dev
+      - feature_1
 
   push:
     branches:
-      - dev
+      - '*'
 
 concurrency:
   group: ci-${{ github.ref }}
