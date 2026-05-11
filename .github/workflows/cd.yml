@@ -27,10 +27,13 @@ jobs:
 
       - name: Setup Kubectl
         uses: azure/setup-kubectl@v4
+        with:
+          version: v1.29.0
 
       - name: Install Helm
         run: |
-          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+          curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+          helm version
 
       - name: Setup Kubeconfig
         run: |
@@ -42,4 +45,5 @@ jobs:
           helm upgrade --install hello-api ./hello-api-chart \
             -n ${{ github.event.inputs.environment }} \
             -f environments/${{ github.event.inputs.environment }}-values.yaml \
-            --set image.tag=${{ github.event.inputs.imageTag }}
+            --set image.tag=${{ github.event.inputs.imageTag }} \
+            --atomic --timeout 5m
