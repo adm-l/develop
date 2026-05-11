@@ -1,0 +1,18 @@
+appName: hello-api
+
+namespace: dev
+
+replicaCount: 2
+
+image:
+  repository: bharat777/hello-api
+  tag: dev
+
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "100m"
+
+  limits:
+    memory: "256Mi"
+    cpu: "200m"
