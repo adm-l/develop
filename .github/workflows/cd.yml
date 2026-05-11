@@ -13,12 +13,11 @@ on:
           - prod
 
       imageTag:
-        description: "Docker image tag (sha or version)"
+        description: "Docker image tag"
         required: true
 
 jobs:
   deploy:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -29,8 +28,9 @@ jobs:
       - name: Setup Kubectl
         uses: azure/setup-kubectl@v4
 
-      - name: Setup Helm
-        uses: azure/setup-helm@v4
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
       - name: Setup Kubeconfig
         run: |
@@ -39,10 +39,7 @@ jobs:
 
       - name: Deploy using Helm
         run: |
-          ENV=${{ github.event.inputs.environment }}
-          TAG=${{ github.event.inputs.imageTag }}
-
           helm upgrade --install hello-api ./hello-api-chart \
-            -n $ENV \
-            -f environments/$ENV-values.yaml \
-            --set image.tag=$TAG
+            -n ${{ github.event.inputs.environment }} \
+            -f environments/${{ github.event.inputs.environment }}-values.yaml \
+            --set image.tag=${{ github.event.inputs.imageTag }}
