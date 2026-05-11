@@ -1,0 +1,48 @@
+name: CD Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - qa
+          - prod
+
+      imageTag:
+        description: "Docker image tag (sha or version)"
+        required: true
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+
+      - name: Setup Kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+
+      - name: Deploy using Helm
+        run: |
+          ENV=${{ github.event.inputs.environment }}
+          TAG=${{ github.event.inputs.imageTag }}
+
+          helm upgrade --install hello-api ./hello-api-chart \
+            -n $ENV \
+            -f environments/$ENV-values.yaml \
+            --set image.tag=$TAG
