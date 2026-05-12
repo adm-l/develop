@@ -8,60 +8,86 @@ on:
 
   push:
     branches:
-      - '*'
+      - "*"
 
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build-and-scan:
+  ci:
 
     runs-on: ubuntu-latest
-
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     permissions:
-      contents: read
+      contents: write
       security-events: write
+
+    env:
+      IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/hello-api
+      TAG: ${{ github.sha }}
 
     steps:
 
+      # 1. Checkout code
       - name: Checkout Code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4
 
+      # 2. Setup Node.js
       - name: Setup Node.js
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
 
+      # 3. Install dependencies
       - name: Install Dependencies
         run: npm ci
 
+      # 4. Run tests
+      - name: Run Tests
+        run: npm test
+
+      # 5. Build Docker image
       - name: Build Docker Image
         env:
           DOCKER_BUILDKIT: 1
         run: |
           docker build \
-            -t ${{ secrets.DOCKER_USERNAME }}/hello-api:${{ github.sha }} \
-            -t ${{ secrets.DOCKER_USERNAME }}/hello-api:dev .
+            -t $IMAGE_NAME:$TAG \
+            -t $IMAGE_NAME:dev .
 
-      - name: Run Trivy Scan
+      # 6. Security scan (Trivy)
+      - name: Trivy Scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ secrets.DOCKER_USERNAME }}/hello-api:${{ github.sha }}
+          image-ref: ${{ env.IMAGE_NAME }}:${{ env.TAG }}
           severity: HIGH,CRITICAL
           exit-code: 0
 
+      # 7. Docker login
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Push Docker Images
+      # 8. Push image to registry
+      - name: Push Image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/hello-api:${{ github.sha }}
+          docker push $IMAGE_NAME:$TAG
+          docker push $IMAGE_NAME:dev
 
-          docker push ${{ secrets.DOCKER_USERNAME }}/hello-api:dev
+      # 9. Update Helm chart (GitOps integration)
+      - name: Update Helm values with new tag
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          # update image tag in helm values
+          sed -i "s/tag:.*/tag: $TAG/g" helm/values.yaml
+
+          git add helm/values.yaml
+          git commit -m "ci: update image tag to $TAG" || echo "No changes"
+          git push
