@@ -22,9 +22,9 @@ app.get("/health", (req, res) => {
   res.status(200).json({
     status: "UP"
   });
-});
+});  
 app.get('/',(req, res) => {
-    res.send('Hello World');
+    res.send('Hello World from Express!');
 });
 
 app.get("/users",(req, res) => {
