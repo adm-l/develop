@@ -82,7 +82,7 @@ jobs:
           git config user.email "github-actions@github.com"
 
           # update image tag in helm values
-          sed -i "s/tag:.*/tag: $TAG/g" helm/values.yaml
+          sed -i "s/tag:.*/tag: $TAG/g" hello-api-chart/values.yaml
 
           git add helm/values.yaml
           git commit -m "ci: update image tag to $TAG" || echo "No changes"
