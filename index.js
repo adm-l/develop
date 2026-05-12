@@ -24,7 +24,7 @@ app.get("/health", (req, res) => {
   });
 });  
 app.get('/',(req, res) => {
-    res.send('Hello World from Express!');
+    res.send('Hello World from Bharat!');
 });
 
 app.get("/users",(req, res) => {
