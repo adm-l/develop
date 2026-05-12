@@ -84,6 +84,6 @@ jobs:
           # update image tag in helm values
           sed -i "s/tag:.*/tag: $TAG/g" hello-api-chart/values.yaml
 
-          git add helm/values.yaml
+          git add hello-api-chart/values.yaml
           git commit -m "ci: update image tag to $TAG" || echo "No changes"
           git push
