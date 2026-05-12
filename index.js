@@ -27,6 +27,10 @@ app.get('/',(req, res) => {
     res.send('Hello World');
 });
 
+app.get("/users",(req, res) => {
+    res.json({users:[{id:1,name:"John"},{id:2,name:"Jane"}]})
+});
+
 app.post('/login',(req, res) => {
     const token = jwt.sign({userId:1},'secretkey',{expiresIn:'20s'})
     res.json({token})
