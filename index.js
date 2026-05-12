@@ -23,22 +23,16 @@ app.get("/health", (req, res) => {
     status: "UP"
   });
 });  
-app.get('/',(req, res) => {
-    res.send('Hello World from Bharat Jogi!');
-});
-
-app.get("/users",(req, res) => {
-    res.json({users:[{id:1,name:"John"},{id:2,name:"Jane"}]})
-});
 
 app.post('/login',(req, res) => {
     const token = jwt.sign({userId:1},'secretkey',{expiresIn:'20s'})
     res.json({token})
 });
 
-app.get("/user",validate,(req,res)=>{
-    res.json({message:"User data",user:req.user})
-})
+app.get("/users",(req, res) => {
+    res.json({users:[{id:1,name:"John"},{id:2,name:"Jane"},{id:3,name:"Jane"}]})
+});
+
 // 404 handler (must be AFTER all routes)
 app.use((req, res) => {
   res.status(404).json({
@@ -46,6 +40,7 @@ app.use((req, res) => {
     message: `Route ${req.originalUrl} not found`,
   });
 });
+
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
 });
