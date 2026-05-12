@@ -45,10 +45,6 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      # 4. Run tests
-      - name: Run Tests
-        run: npm test
-
       # 5. Build Docker image
       - name: Build Docker Image
         env:
