@@ -2,7 +2,7 @@ appName: hello-api
 
 namespace: dev
 
-replicaCount: 2
+replicaCount: 3
 
 image:
   repository: bharat777/hello-api
