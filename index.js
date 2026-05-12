@@ -30,7 +30,7 @@ app.post('/login',(req, res) => {
 });
 
 app.get("/users",(req, res) => {
-    res.json({users:[{id:1,name:"John"},{id:2,name:"Jane"}]})
+    res.json({users:[{id:1,name:"John"},{id:2,name:"Jane"},{id:3,name:"Jane"}]})
 });
 
 // 404 handler (must be AFTER all routes)
