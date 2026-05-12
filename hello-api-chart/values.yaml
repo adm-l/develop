@@ -6,7 +6,7 @@ replicaCount: 3
 
 image:
   repository: bharat777/hello-api
-  tag: 485b686caaeee53241352c21a2a9068e8fbe2baa
+  tag: 48f6a983c66eab3af752935ad4f974a0382600c2
 
 resources:
   requests:
